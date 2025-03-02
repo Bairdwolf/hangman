@@ -3,11 +3,30 @@ class GameDisplay
     @secret_word_length=len
     @@padding="================"
     @@top=[@@padding, '|   HANG MAN   |', @@padding]
-    @man=['   _________    ','   |/      |    ', '   |       o    ', 
-    '   |      /|\    ', '   |      / \   ', '   |     /   \  ', '___|___       ' ]
+    @man=['   _________    ','   |/      |    ', '   |            ', 
+    '   |             ', '   |            ', '   |            ', '___|___       ' ]
     @@middle=[@@padding, '| YOUR GUESSES |', @@padding]
     @bottom=[[], justify(@secret_word_length), [], @@padding]
+    display_board()
   end
+
+  def display_board()
+    display_section(@@top)
+    display_section(@man)
+    display_section(@@middle)
+    display_section(bottom_print(@bottom))
+  end
+
+  def display_section(arr)
+    arr.each do |line|
+      puts line
+    end
+  end
+
+  def bottom_print(bottom)
+    return bottom
+  end
+
   def justify(len)
     remainder=14-len
     leftside=""
