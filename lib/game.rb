@@ -1,38 +1,42 @@
 class Game
   attr_reader :secret_word
-  attr_accessor :game_display, :winner
-  def initialize(valid_words)
-    @valid_words_list=valid_words
-    @secret_word=@valid_words_list.sample().downcase
-    @wrong_guesses=[]
-    @correct_guesses=Array.new(self.secret_word.length, '-')
+  attr_accessor :game_display, :winner, :game_number
+
+  def initialize(valid_words, game_number)
+    @game_number=game_number
+    @valid_words_list = valid_words
+    @secret_word = @valid_words_list.sample.downcase
+    @wrong_guesses = []
+    @correct_guesses = Array.new(secret_word.length, '-')
     @game_display = GameDisplay.new(@correct_guesses)
-    @winner="none"
-    #cheat mode:
+    @winner = 'none'
+    # cheat mode:
     #puts self.secret_word
   end
 
   def play()
-    until self.winner!= "none"
-      guess=make_guess()
-      if check_guess(guess)==true
+    until winner != 'none'
+      guess = make_guess
+      if check_guess(guess) == true
         add_guess(@correct_guesses, guess)
-        self.game_display.update_correct_guesses(@correct_guesses, @wrong_guesses)
+        game_display.update_correct_guesses(@correct_guesses, @wrong_guesses)
       else
         add_guess(@wrong_guesses, guess)
-        self.game_display.update_wrong_guesses(@wrong_guesses, @correct_guesses)
+        game_display.update_wrong_guesses(@wrong_guesses, @correct_guesses)
       end
-      self.winner=check_winner()
+      @winner = check_winner
     end
-    self.game_display.display_winner(@correct_guesses, @wrong_guesses, @winner)
+    game_display.display_winner(@correct_guesses, @wrong_guesses, @winner)
   end
 
-  def make_guess()
+  def make_guess
     begin
       puts 'Select a letter'
-      #input='blue'
+      # input='blue'
       input = gets.chomp.to_s
-      raise StandardError.new 'Invalid input: Input outside range' unless input.downcase>='a' && input.downcase<='z' && input.length==1
+      unless input.downcase >= 'a' && input.downcase <= 'z' && input.length == 1
+        raise StandardError.new 'Invalid input: Input outside range'
+      end
       raise StandardError.new 'Invalid input: Already guessed correctly' if @correct_guesses.any?(input)
       raise StandardError.new 'Invalid input: Already guessed incorrectly' if @wrong_guesses.any?(input)
     rescue StandardError => e
@@ -43,13 +47,13 @@ class Game
   end
 
   def check_guess(guess)
-    (self.secret_word.split('').any?(guess))
+    secret_word.split('').any?(guess)
   end
 
   def add_guess(arr, guess)
-    if arr==@correct_guesses
+    if arr == @correct_guesses
       arr.map!.with_index do |letter, index|
-        if self.secret_word.split('')[index]==guess
+        if secret_word.split('')[index] == guess
           guess
         else
           letter
@@ -61,15 +65,9 @@ class Game
     end
   end
 
-  def check_winner()
-    if @correct_guesses==self.secret_word
-      return 'Player'
-    end
-    if @wrong_guesses.length>5
-      return 'Computer'
-    end
-    return 'none'
+  def check_winner
+    return 'Player' if @correct_guesses.join('') == secret_word
+    return 'Computer' if @wrong_guesses.length > 5
+    'none'
   end
-
-
 end
