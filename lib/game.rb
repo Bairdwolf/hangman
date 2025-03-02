@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 class Game
   attr_reader :secret_word
   attr_accessor :game_display, :round, :winner, :wrong_guesses, :correct_guesses
@@ -8,7 +6,7 @@ class Game
     @secret_word=@valid_words_list.sample().downcase
     @wrong_guesses=[]
     @correct_guesses=Array.new(self.secret_word.length, '-')
-    @game_display = GameDisplay.new(@secret_word.length)
+    @game_display = GameDisplay.new(@correct_guesses)
     @winner="none"
     puts self.secret_word
   end
@@ -32,7 +30,7 @@ class Game
       puts 'Select a letter'
       #input='blue'
       input = gets.chomp.to_s
-      raise StandardError.new 'Invalid input: Input outside range' unless input.downcase>='a' && input.downcase<='z'
+      raise StandardError.new 'Invalid input: Input outside range' unless input.downcase>='a' && input.downcase<='z' && input.length==1
       raise StandardError.new 'Invalid input: Already guessed correctly' if correct_guesses.any?(input)
       raise StandardError.new 'Invalid input: Already guessed incorrectly' if wrong_guesses.any?(input)
     rescue StandardError => e

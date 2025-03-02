@@ -1,5 +1,6 @@
 require_relative('game')
 require_relative('gamedisplay')
+require('rainbow')
 def get_valid_words(fname)
   valid_words=Array.new
   File.readlines(fname).each do |line|
