@@ -1,6 +1,6 @@
 class Game
   attr_reader :secret_word
-  attr_accessor :game_display, :round, :winner, :wrong_guesses, :correct_guesses
+  attr_accessor :game_display, :winner
   def initialize(valid_words)
     @valid_words_list=valid_words
     @secret_word=@valid_words_list.sample().downcase
@@ -8,21 +8,23 @@ class Game
     @correct_guesses=Array.new(self.secret_word.length, '-')
     @game_display = GameDisplay.new(@correct_guesses)
     @winner="none"
-    puts self.secret_word
+    #cheat mode:
+    #puts self.secret_word
   end
 
   def play()
     until self.winner!= "none"
       guess=make_guess()
       if check_guess(guess)==true
-        add_guess(self.correct_guesses, guess)
-        self.game_display.update_correct_guesses(self.correct_guesses)
+        add_guess(@correct_guesses, guess)
+        self.game_display.update_correct_guesses(@correct_guesses, @wrong_guesses)
       else
-        add_guess(self.wrong_guesses, guess)
-        self.game_display.update_wrong_guesses(self.wrong_guesses)
+        add_guess(@wrong_guesses, guess)
+        self.game_display.update_wrong_guesses(@wrong_guesses, @correct_guesses)
       end
       self.winner=check_winner()
     end
+    self.game_display.display_winner(@correct_guesses, @wrong_guesses, @winner)
   end
 
   def make_guess()
@@ -31,8 +33,8 @@ class Game
       #input='blue'
       input = gets.chomp.to_s
       raise StandardError.new 'Invalid input: Input outside range' unless input.downcase>='a' && input.downcase<='z' && input.length==1
-      raise StandardError.new 'Invalid input: Already guessed correctly' if correct_guesses.any?(input)
-      raise StandardError.new 'Invalid input: Already guessed incorrectly' if wrong_guesses.any?(input)
+      raise StandardError.new 'Invalid input: Already guessed correctly' if @correct_guesses.any?(input)
+      raise StandardError.new 'Invalid input: Already guessed incorrectly' if @wrong_guesses.any?(input)
     rescue StandardError => e
       puts "\tError: #{e}"
       retry
@@ -41,11 +43,11 @@ class Game
   end
 
   def check_guess(guess)
-    self.secret_word.split('').any?(guess)
+    (self.secret_word.split('').any?(guess))
   end
 
   def add_guess(arr, guess)
-    if arr==self.correct_guesses
+    if arr==@correct_guesses
       arr.map!.with_index do |letter, index|
         if self.secret_word.split('')[index]==guess
           guess
@@ -58,5 +60,16 @@ class Game
       arr.push(guess)
     end
   end
+
+  def check_winner()
+    if @correct_guesses==self.secret_word
+      return 'Player'
+    end
+    if @wrong_guesses.length>5
+      return 'Computer'
+    end
+    return 'none'
+  end
+
 
 end
