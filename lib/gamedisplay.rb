@@ -9,7 +9,7 @@ class GameDisplay
             '   |             ', '   |            ', '   |            ', '___|___       ']
     @@middle = [@@padding, '| YOUR GUESSES |', @@padding]
     @bottom = [guesses_length, '|  ELIMINATED  |', [], @@padding]
-    display_board
+    display_board if guesses_length.length > 1
   end
 
   def display_board
@@ -100,6 +100,8 @@ class GameDisplay
   end
 
   def display_winner(correct, incorrect, winner)
+    return if winner == 'none'
+
     bottom[0] = correct
     bottom[2] = incorrect
     if winner == 'Player'
